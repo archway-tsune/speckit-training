@@ -18,6 +18,7 @@ export default function ProductDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
   const [cartMessage, setCartMessage] = useState<string | undefined>();
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const fetchProduct = useCallback(async () => {
     if (!params.id) return;
@@ -45,6 +46,8 @@ export default function ProductDetailPage() {
   }, [fetchProduct]);
 
   const handleAddToCart = async (productId: string) => {
+    if (isAddingToCart) return;
+    setIsAddingToCart(true);
     setCartMessage(undefined);
     try {
       const res = await fetch('/api/cart/items', {
@@ -58,14 +61,15 @@ export default function ProductDetailPage() {
         setCartMessage('カートに追加しました');
         setTimeout(() => setCartMessage(undefined), 3000);
       } else if (res.status === 401) {
-        // 未ログインの場合はログインページへ
-        router.push('/login');
+        router.push(`/login?returnTo=/catalog/${productId}`);
       } else {
         const data = await res.json();
         setCartMessage(data.error?.message || 'カートへの追加に失敗しました');
       }
     } catch {
       setCartMessage('カートへの追加に失敗しました');
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
