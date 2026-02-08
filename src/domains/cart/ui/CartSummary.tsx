@@ -5,6 +5,7 @@
  * 合計セクション — 商品合計・消費税（10%、端数切り捨て）・総合計を表示
  */
 import React from 'react';
+import Link from 'next/link';
 import { calculateTax } from '@/domains/cart/types';
 
 export interface CartSummaryProps {
@@ -34,6 +35,13 @@ export function CartSummary({ subtotal }: CartSummaryProps) {
           <span data-testid="cart-total">{formatPrice(total)}</span>
         </div>
       </div>
+
+      <Link
+        href="/checkout"
+        className="mt-6 block w-full rounded-md bg-base-900 px-6 py-3 text-center text-base font-medium text-base-50 hover:bg-base-900/90"
+      >
+        注文手続きへ
+      </Link>
     </div>
   );
 }
