@@ -111,6 +111,14 @@ describe('CartSummary コンポーネント', () => {
     expect(screen.getByText('¥3')).toBeInTheDocument();
     expect(screen.getByText('¥36')).toBeInTheDocument();
   });
+
+  it('「注文手続きへ」リンクが /checkout へのリンクであること', async () => {
+    const { CartSummary } = await import('@/domains/cart/ui');
+    render(<CartSummary subtotal={10000} />);
+    const link = screen.getByRole('link', { name: /注文手続きへ/ });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute('href', '/checkout');
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────
