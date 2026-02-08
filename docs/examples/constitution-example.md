@@ -4,13 +4,11 @@
 
 ```
 /speckit.constitution 
-## プロジェクト概要
-
+# プロジェクト概要
 プロジェクト名: トレーニングECサイト
 説明: Next.js + TypeScriptで構築するECサイト。EC Site Architecture Templateをベースに実装。
 
-## 技術スタック
-
+# 技術スタック
 - Next.js 14 (App Router)
 - TypeScript 5 (strict mode)
 - React 18
@@ -19,8 +17,7 @@
 - Vitest (単体・統合テスト)
 - Playwright (E2Eテスト)
 
-## アーキテクチャ原則
-
+# アーキテクチャ原則
 1. テンプレート駆動開発
    - UI/API/テストは templates/ のテンプレートを基に実装
    - 共通基盤は foundation/ を使用
@@ -36,44 +33,41 @@
 
 4. 実装ワークフロー
    - src/domains/ を本番実装に置き換える。src/contracts/ に準拠し、src/samples/ を参考に実装する
+   - spec.md に定義されていない機能は実装しない。samples や他ドメインに含まれる機能であっても、現在の仕様のスコープ外であれば除外する
    - ユーザーストーリー単位でフェーズを分割し、各ストーリーを独立して実装・テスト可能にする
    - ドメイン実装時にレイアウトファイルの navLinks にナビゲーションリンクを追加する
      - 購入者向け: src/app/(buyer)/layout.tsx の navLinks に追加（例: { href: '/catalog', label: '商品一覧' }）
      - 管理者向け: src/app/admin/layout.tsx の navLinks に追加（例: { href: '/admin/products', label: '商品管理' }）
      - navLinks はデフォルトで空（購入者）またはダッシュボードのみ（管理者）。実装したドメインのリンクのみ追加する
 
-## 品質基準
-
+# 品質基準
 - TypeScript: strictモード、エラー0件
 - ESLint: エラー0件
 - テストカバレッジ: 80%以上
 - E2Eテスト: 主要導線をカバー
 - パフォーマンス: 一覧ページ初回ロード3秒以内
 
-## 認証・認可
-
+# 認証・認可
 - ロール: buyer（購入者）, admin（管理者）
 - セッション管理: Cookie-based
 - 認可: RBAC (Role-Based Access Control)
 
-## 命名規約
-
+# 命名規約
 - ファイル名: kebab-case (例: product-list.tsx)
 - コンポーネント: PascalCase (例: ProductList)
 - 関数: camelCase (例: getProducts)
 - 定数: UPPER_SNAKE_CASE (例: MAX_ITEMS)
 - 型: PascalCase (例: ProductType)
 
-## E2Eテスト作成時の注意事項
-
+# E2Eテスト作成時の注意事項
 - テスト作成時は `src/samples/tests/e2e/domains/` 配下のサンプルE2Eテストを参照すること
 
-## E2Eテスト実行時の注意事項
-
+# E2Eテスト実行時の注意事項
 - E2Eテスト実行前にポート3000を占有している既存プロセスを必ず停止する
 - Windows環境ではBashの `$_` がextglobで壊れるため、PowerShellスクリプトは `powershell.exe -File -` + heredocで実行する
 - データ変更後は `.next` キャッシュを削除してからサーバーを再起動する（`globalThis` のインメモリストアがHMRで残るため）
 
+# 前提
 すべての仕様書・計画・タスク・実装に関するドキュメントは日本語で記述すること。
 プロジェクト憲章は、見出し・本文ともにすべて日本語で作成すること。
 ```

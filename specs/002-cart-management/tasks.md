@@ -19,8 +19,8 @@
 
 **目的**: テストディレクトリ構造の準備と既存コントラクトの確認
 
-- [ ] T001 テストディレクトリ構造を作成: `tests/unit/domains/cart/`、`tests/integration/domains/cart/`、`tests/e2e/cart/`
-- [ ] T002 既存コントラクト `src/contracts/cart.ts` のスキーマ（CartSchema, CartItemSchema, 入出力スキーマ）が仕様を満たすことを確認
+- [x] T001 テストディレクトリ構造を作成: `tests/unit/domains/cart/`、`tests/integration/domains/cart/`、`tests/e2e/cart/`
+- [x] T002 既存コントラクト `src/contracts/cart.ts` のスキーマ（CartSchema, CartItemSchema, 入出力スキーマ）が仕様を満たすことを確認
 
 **チェックポイント**: テストディレクトリが存在し、既存コントラクトが要件を網羅していることを確認
 
@@ -34,12 +34,12 @@
 
 ### テスト（Red フェーズ）
 
-- [ ] T003 [P] コントラクトバリデーションテストを作成: `tests/unit/domains/cart/usecases.test.ts` — CartItemSchema（productId, quantity, price）、AddToCartInputSchema（productId必須, quantity範囲）、UpdateCartItemInputSchema（quantity 1〜99）のバリデーションテスト
-- [ ] T004 [P] リポジトリ統合テストを作成: `tests/integration/domains/cart/api.test.ts` — CartRepository の find/create/addItem/updateItemQuantity/removeItem の基本動作テスト
+- [x] T003 [P] コントラクトバリデーションテストを作成: `tests/unit/domains/cart/usecases.test.ts` — CartItemSchema（productId, quantity, price）、AddToCartInputSchema（productId必須, quantity範囲）、UpdateCartItemInputSchema（quantity 1〜99）のバリデーションテスト
+- [x] T004 [P] リポジトリ統合テストを作成: `tests/integration/domains/cart/api.test.ts` — CartRepository の find/create/addItem/updateItemQuantity/removeItem の基本動作テスト
 
 ### 実装（Green フェーズ）
 
-- [ ] T005 テスト T003, T004 の Red 確認後、既存リポジトリ `src/infrastructure/repositories/cart.ts` の動作を確認し、テストがすべてパスすることを検証
+- [x] T005 テスト T003, T004 の Red 確認後、既存リポジトリ `src/infrastructure/repositories/cart.ts` の動作を確認し、テストがすべてパスすることを検証
 
 **チェックポイント**: コントラクトバリデーション・リポジトリ統合テストがすべてパス。基盤準備完了
 
@@ -53,16 +53,16 @@
 
 ### テスト（Red フェーズ）
 
-- [ ] T006 [P] [US1] addToCart ユースケース単体テストを作成: `tests/unit/domains/cart/usecases.test.ts` — 商品追加（正常系）、同一商品の数量増加、存在しない商品でエラー、在庫切れ商品でエラーのテスト
-- [ ] T007 [P] [US1] POST `/api/cart/items` 統合テストを作成: `tests/integration/domains/cart/api.test.ts` — 商品追加API呼び出し（200返却）、カート内の商品数・小計の検証、エラーケース（404, 400）
-- [ ] T008 [P] [US1] 商品詳細ページ「カートに追加」ボタンE2Eテストを作成: `tests/e2e/cart/buyer-cart.spec.ts` — 詳細ページで追加ボタンクリック → 成功メッセージ表示、ヘッダーカート件数更新、在庫切れ商品でボタン無効
+- [x] T006 [P] [US1] addToCart ユースケース単体テストを作成: `tests/unit/domains/cart/usecases.test.ts` — 商品追加（正常系）、同一商品の数量増加、存在しない商品でエラー、在庫切れ商品でエラーのテスト
+- [x] T007 [P] [US1] POST `/api/cart/items` 統合テストを作成: `tests/integration/domains/cart/api.test.ts` — 商品追加API呼び出し（200返却）、カート内の商品数・小計の検証、エラーケース（404, 400）
+- [x] T008 [P] [US1] 商品詳細ページ「カートに追加」ボタンE2Eテストを作成: `tests/e2e/cart/buyer-cart.spec.ts` — 詳細ページで追加ボタンクリック → 成功メッセージ表示、ヘッダーカート件数更新、在庫切れ商品でボタン無効
 
 ### 実装（Green フェーズ）
 
-- [ ] T009 [US1] カート用型定義を作成: `src/domains/cart/types/index.ts` — TaxCalculation インターフェース（subtotal, tax, total）、消費税計算ユーティリティ関数 `calculateTax(subtotal)`
-- [ ] T010 [US1] addToCart 本番ユースケースを作成: `src/domains/cart/api/usecases.ts` — `src/contracts/cart.ts` の CartRepository・ProductFetcher インターフェースに準拠。入力バリデーション、商品存在・在庫チェック、同一商品数量加算ロジックを実装
-- [ ] T011 [US1] `src/domains/cart/api/index.ts` を更新: samples の再エクスポートから本番 usecases のエクスポートに切り替え（addToCart, getCart）
-- [ ] T012 [US1] 商品詳細ページにカート追加ロジックを統合: `src/app/(buyer)/catalog/[id]/page.tsx` — `onAddToCart` コールバックで POST `/api/cart/items` を呼び出し、成功時に `dispatchCartUpdated()` 発火、二重送信防止（loading 状態管理）、成功メッセージ表示
+- [x] T009 [US1] カート用型定義を作成: `src/domains/cart/types/index.ts` — TaxCalculation インターフェース（subtotal, tax, total）、消費税計算ユーティリティ関数 `calculateTax(subtotal)`
+- [x] T010 [US1] addToCart 本番ユースケースを作成: `src/domains/cart/api/usecases.ts` — `src/contracts/cart.ts` の CartRepository・ProductFetcher インターフェースに準拠。入力バリデーション、商品存在・在庫チェック、同一商品数量加算ロジックを実装
+- [x] T011 [US1] `src/domains/cart/api/index.ts` を更新: samples の再エクスポートから本番 usecases のエクスポートに切り替え（addToCart, getCart）
+- [x] T012 [US1] 商品詳細ページにカート追加ロジックを統合: `src/app/(buyer)/catalog/[id]/page.tsx` — `onAddToCart` コールバックで POST `/api/cart/items` を呼び出し、成功時に `dispatchCartUpdated()` 発火、二重送信防止（loading 状態管理）、成功メッセージ表示
 
 **チェックポイント**: 商品詳細ページからカートに追加でき、ヘッダーのカート件数が更新される。T006〜T008 のテストがすべてパス
 
@@ -76,18 +76,18 @@
 
 ### テスト（Red フェーズ）
 
-- [ ] T013 [P] [US2] getCart ユースケース単体テストを作成: `tests/unit/domains/cart/usecases.test.ts` — カート取得（商品あり）、空カート自動作成、アイテム情報（productName, price, quantity）の検証
-- [ ] T014 [P] [US2] CartView・CartItem・CartSummary コンポーネント単体テストを作成: `tests/unit/domains/cart/components.test.tsx` — カートアイテム行の表示（画像・名前・単価・数量・小計）、合計セクション（商品合計・消費税・総合計）、空カートメッセージと商品一覧リンク表示
-- [ ] T015 [P] [US2] カートページE2Eテストを作成: `tests/e2e/cart/buyer-cart.spec.ts` — カートページで商品一覧表示、合計金額の検証、空カートのメッセージ表示
+- [x] T013 [P] [US2] getCart ユースケース単体テストを作成: `tests/unit/domains/cart/usecases.test.ts` — カート取得（商品あり）、空カート自動作成、アイテム情報（productName, price, quantity）の検証
+- [x] T014 [P] [US2] CartView・CartItem・CartSummary コンポーネント単体テストを作成: `tests/unit/domains/cart/components.test.tsx` — カートアイテム行の表示（画像・名前・単価・数量・小計）、合計セクション（商品合計・消費税・総合計）、空カートメッセージと商品一覧リンク表示
+- [x] T015 [P] [US2] カートページE2Eテストを作成: `tests/e2e/cart/buyer-cart.spec.ts` — カートページで商品一覧表示、合計金額の検証、空カートのメッセージ表示
 
 ### 実装（Green フェーズ）
 
-- [ ] T016 [US2] getCart 本番ユースケースを作成: `src/domains/cart/api/usecases.ts` に追加 — カート取得、未作成時の空カート自動作成
-- [ ] T017 [P] [US2] CartItem コンポーネントを作成: `src/domains/cart/ui/CartItem.tsx` — 商品画像・名前・単価・数量・小計を表示。数量変更・削除のコールバック props を受け取る（Phase 5, 6 で実装）
-- [ ] T018 [P] [US2] CartSummary コンポーネントを作成: `src/domains/cart/ui/CartSummary.tsx` — 商品合計・消費税（`Math.floor(subtotal * 0.1)`）・総合計を表示
-- [ ] T019 [US2] CartView コンポーネントを作成: `src/domains/cart/ui/CartView.tsx` — CartItem と CartSummary を組み合わせ。Loading/Error/Empty 状態対応。空カート時に「カートに商品がありません」メッセージと商品一覧リンクを表示
-- [ ] T020 [US2] `src/domains/cart/ui/index.ts` を更新: samples の再エクスポートから本番コンポーネントのエクスポートに切り替え（CartView, CartItem, CartSummary）
-- [ ] T021 [US2] カートページを更新: `src/app/(buyer)/cart/page.tsx` — GET `/api/cart` からデータ取得、CartView に渡して表示
+- [x] T016 [US2] getCart 本番ユースケースを作成: `src/domains/cart/api/usecases.ts` に追加 — カート取得、未作成時の空カート自動作成
+- [x] T017 [P] [US2] CartItem コンポーネントを作成: `src/domains/cart/ui/CartItem.tsx` — 商品画像・名前・単価・数量・小計を表示。数量変更・削除のコールバック props を受け取る（Phase 5, 6 で実装）
+- [x] T018 [P] [US2] CartSummary コンポーネントを作成: `src/domains/cart/ui/CartSummary.tsx` — 商品合計・消費税（`Math.floor(subtotal * 0.1)`）・総合計を表示
+- [x] T019 [US2] CartView コンポーネントを作成: `src/domains/cart/ui/CartView.tsx` — CartItem と CartSummary を組み合わせ。Loading/Error/Empty 状態対応。空カート時に「カートに商品がありません」メッセージと商品一覧リンクを表示
+- [x] T020 [US2] `src/domains/cart/ui/index.ts` を更新: samples の再エクスポートから本番コンポーネントのエクスポートに切り替え（CartView, CartItem, CartSummary）
+- [x] T021 [US2] カートページを更新: `src/app/(buyer)/cart/page.tsx` — GET `/api/cart` からデータ取得、CartView に渡して表示
 
 **チェックポイント**: カートページで商品一覧と正しい合計金額（消費税含む）が表示される。T013〜T015 のテストがすべてパス
 
@@ -101,16 +101,16 @@
 
 ### テスト（Red フェーズ）
 
-- [ ] T022 [P] [US3] updateCartItem ユースケース単体テストを作成: `tests/unit/domains/cart/usecases.test.ts` — 数量変更（正常系）、範囲外（0, 100）でエラー、在庫超過でエラー、存在しないアイテムでエラー
-- [ ] T023 [P] [US3] 数量変更UI統合テストを作成: `tests/unit/domains/cart/components.test.tsx` — CartItem の数量変更コールバック呼び出し、在庫超過時のエラーメッセージ表示
-- [ ] T024 [P] [US3] 数量変更E2Eテストを作成: `tests/e2e/cart/buyer-cart.spec.ts` — カートページで数量変更 → 小計・合計の即時更新確認
+- [x] T022 [P] [US3] updateCartItem ユースケース単体テストを作成: `tests/unit/domains/cart/usecases.test.ts` — 数量変更（正常系）、範囲外（0, 100）でエラー、在庫超過でエラー、存在しないアイテムでエラー
+- [x] T023 [P] [US3] 数量変更UI統合テストを作成: `tests/unit/domains/cart/components.test.tsx` — CartItem の数量変更コールバック呼び出し、在庫超過時のエラーメッセージ表示
+- [x] T024 [P] [US3] 数量変更E2Eテストを作成: `tests/e2e/cart/buyer-cart.spec.ts` — カートページで数量変更 → 小計・合計の即時更新確認
 
 ### 実装（Green フェーズ）
 
-- [ ] T025 [US3] updateCartItem 本番ユースケースを作成: `src/domains/cart/api/usecases.ts` に追加 — 数量バリデーション（1〜99、在庫数以下）、エラーメッセージ返却
-- [ ] T026 [US3] `src/domains/cart/api/index.ts` に updateCartItem を追加エクスポート
-- [ ] T027 [US3] CartItem コンポーネントに数量変更機能を実装: `src/domains/cart/ui/CartItem.tsx` — QuantitySelector テンプレート使用、`onUpdateQuantity` コールバック、在庫超過時エラーメッセージ表示
-- [ ] T028 [US3] カートページに数量変更ハンドラを実装: `src/app/(buyer)/cart/page.tsx` — PUT `/api/cart/items/[productId]` 呼び出し、`cart-updated` イベント発火、即時再描画
+- [x] T025 [US3] updateCartItem 本番ユースケースを作成: `src/domains/cart/api/usecases.ts` に追加 — 数量バリデーション（1〜99、在庫数以下）、エラーメッセージ返却
+- [x] T026 [US3] `src/domains/cart/api/index.ts` に updateCartItem を追加エクスポート
+- [x] T027 [US3] CartItem コンポーネントに数量変更機能を実装: `src/domains/cart/ui/CartItem.tsx` — QuantitySelector テンプレート使用、`onUpdateQuantity` コールバック、在庫超過時エラーメッセージ表示
+- [x] T028 [US3] カートページに数量変更ハンドラを実装: `src/app/(buyer)/cart/page.tsx` — PUT `/api/cart/items/[productId]` 呼び出し、`cart-updated` イベント発火、即時再描画
 
 **チェックポイント**: カートページで数量変更すると小計・合計が即時更新される。T022〜T024 のテストがすべてパス
 
@@ -124,17 +124,17 @@
 
 ### テスト（Red フェーズ）
 
-- [ ] T029 [P] [US4] removeFromCart ユースケース単体テストを作成: `tests/unit/domains/cart/usecases.test.ts` — 商品削除（正常系）、存在しないアイテムでエラー
-- [ ] T030 [P] [US4] 削除UI・確認ダイアログ統合テストを作成: `tests/unit/domains/cart/components.test.tsx` — 削除ボタンクリックで確認ダイアログ表示、「削除する」で `onRemove` コールバック呼び出し、「キャンセル」で何も起きない
-- [ ] T031 [P] [US4] 商品削除E2Eテストを作成: `tests/e2e/cart/buyer-cart.spec.ts` — 削除ボタン → 確認ダイアログ → 削除実行 → 商品消去確認、最後の商品削除で空状態メッセージ表示
+- [x] T029 [P] [US4] removeFromCart ユースケース単体テストを作成: `tests/unit/domains/cart/usecases.test.ts` — 商品削除（正常系）、存在しないアイテムでエラー
+- [x] T030 [P] [US4] 削除UI・確認ダイアログ統合テストを作成: `tests/unit/domains/cart/components.test.tsx` — 削除ボタンクリックで確認ダイアログ表示、「削除する」で `onRemove` コールバック呼び出し、「キャンセル」で何も起きない
+- [x] T031 [P] [US4] 商品削除E2Eテストを作成: `tests/e2e/cart/buyer-cart.spec.ts` — 削除ボタン → 確認ダイアログ → 削除実行 → 商品消去確認、最後の商品削除で空状態メッセージ表示
 
 ### 実装（Green フェーズ）
 
-- [ ] T032 [US4] removeFromCart 本番ユースケースを作成: `src/domains/cart/api/usecases.ts` に追加
-- [ ] T033 [US4] `src/domains/cart/api/index.ts` に removeFromCart を追加エクスポート
-- [ ] T034 [US4] CartItem コンポーネントに削除ボタンを実装: `src/domains/cart/ui/CartItem.tsx` — 削除ボタン表示、`onRemove` コールバック
-- [ ] T035 [US4] CartView に確認ダイアログを統合: `src/domains/cart/ui/CartView.tsx` — ConfirmDialog テンプレート使用（variant='danger'）、削除確認後にコールバック実行
-- [ ] T036 [US4] カートページに削除ハンドラを実装: `src/app/(buyer)/cart/page.tsx` — DELETE `/api/cart/items/[productId]` 呼び出し、`cart-updated` イベント発火、即時再描画
+- [x] T032 [US4] removeFromCart 本番ユースケースを作成: `src/domains/cart/api/usecases.ts` に追加
+- [x] T033 [US4] `src/domains/cart/api/index.ts` に removeFromCart を追加エクスポート
+- [x] T034 [US4] CartItem コンポーネントに削除ボタンを実装: `src/domains/cart/ui/CartItem.tsx` — 削除ボタン表示、`onRemove` コールバック
+- [x] T035 [US4] CartView に確認ダイアログを統合: `src/domains/cart/ui/CartView.tsx` — ConfirmDialog テンプレート使用（variant='danger'）、削除確認後にコールバック実行
+- [x] T036 [US4] カートページに削除ハンドラを実装: `src/app/(buyer)/cart/page.tsx` — DELETE `/api/cart/items/[productId]` 呼び出し、`cart-updated` イベント発火、即時再描画
 
 **チェックポイント**: 確認ダイアログ経由で商品を削除でき、最後の商品を削除すると空状態メッセージが表示される。T029〜T031 のテストがすべてパス
 
@@ -148,11 +148,11 @@
 
 ### テスト（Red フェーズ）
 
-- [ ] T037 [P] [US5] カート永続化E2Eテストを作成: `tests/e2e/cart/buyer-cart.spec.ts` — 商品追加 → ページ遷移 → カートページに戻る → 内容保持確認、商品追加 → リロード → 内容保持確認
+- [x] T037 [P] [US5] カート永続化E2Eテストを作成: `tests/e2e/cart/buyer-cart.spec.ts` — 商品追加 → ページ遷移 → カートページに戻る → 内容保持確認、商品追加 → リロード → 内容保持確認
 
 ### 実装（Green フェーズ）
 
-- [ ] T038 [US5] カート永続化の検証と修正: インメモリリポジトリ `src/infrastructure/repositories/cart.ts` の `globalThis.__cartStore` がページ遷移・リロードで保持されることを確認。問題があれば修正
+- [x] T038 [US5] カート永続化の検証と修正: インメモリリポジトリ `src/infrastructure/repositories/cart.ts` の `globalThis.__cartStore` がページ遷移・リロードで保持されることを確認。問題があれば修正
 
 **チェックポイント**: ページ遷移・リロード後もカート内容が保持される。T037 のテストがパス
 
@@ -162,11 +162,11 @@
 
 **目的**: ナビゲーションリンク追加、全テスト実行、カバレッジ確認
 
-- [ ] T039 購入者レイアウトの navLinks にカートリンクを追加: `src/app/(buyer)/layout.tsx` — `{ href: '/cart', label: 'カート' }` をコメント解除して追加
-- [ ] T040 ナビゲーションE2Eテストを追加: `tests/e2e/cart/buyer-cart.spec.ts` — ヘッダーに「カート」リンクが表示され、クリックで `/cart` に遷移すること
-- [ ] T041 全テストスイートを実行し、すべてパスすることを確認（vitest + playwright）
-- [ ] T042 TypeScript コンパイルエラーが0件であることを確認
-- [ ] T043 テストカバレッジが80%以上であることを確認
+- [x] T039 購入者レイアウトの navLinks にカートリンクを追加: `src/app/(buyer)/layout.tsx` — `{ href: '/cart', label: 'カート' }` をコメント解除して追加
+- [x] T040 ナビゲーションE2Eテストを追加: `tests/e2e/cart/buyer-cart.spec.ts` — ヘッダーに「カート」リンクが表示され、クリックで `/cart` に遷移すること
+- [x] T041 全テストスイートを実行し、すべてパスすることを確認（vitest + playwright）
+- [x] T042 TypeScript コンパイルエラーが0件であることを確認
+- [x] T043 テストカバレッジが80%以上であることを確認
 
 **チェックポイント**: 全テストパス、TypeScript エラー0件、カバレッジ80%以上
 

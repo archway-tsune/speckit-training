@@ -28,7 +28,7 @@ export default function CartPage() {
       if (data.success && data.data) {
         setCart(data.data);
       } else if (res.status === 401) {
-        router.push('/login');
+        router.push('/login?returnTo=/cart');
         return;
       } else {
         setError(data.error?.message || 'カートの取得に失敗しました');
@@ -82,10 +82,6 @@ export default function CartPage() {
     }
   };
 
-  const handleCheckout = () => {
-    router.push('/checkout');
-  };
-
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="mb-8 text-3xl font-bold text-base-900">カート</h1>
@@ -95,7 +91,6 @@ export default function CartPage() {
         error={error}
         onUpdateQuantity={handleUpdateQuantity}
         onRemove={handleRemove}
-        onCheckout={handleCheckout}
       />
     </div>
   );
