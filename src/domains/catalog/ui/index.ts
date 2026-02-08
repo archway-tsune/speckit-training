@@ -1,6 +1,7 @@
 /**
- * Catalog ドメイン - UI 暫定スキャフォールド
- * サンプル実装の再エクスポート（本番実装で置き換え予定）
+ * Catalog ドメイン - UI エクスポート
  */
-export { ProductList } from '@/samples/domains/catalog/ui/ProductList';
-export { ProductDetail } from '@/samples/domains/catalog/ui/ProductDetail';
+export { ProductList } from './ProductList';
+export { ProductCard } from './ProductCard';
+
+export { ProductDetail } from './ProductDetail';

@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
       limit: searchParams.get('limit') || '20',
       // 未認証の場合はpublishedのみ表示
       status: session ? (searchParams.get('status') || undefined) : 'published',
+      keyword: searchParams.get('keyword') || undefined,
     };
 
     const result = await getProducts(input, {

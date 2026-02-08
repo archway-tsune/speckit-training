@@ -27,7 +27,6 @@ General: Follow standard conventions
 ## Recent Changes
 - 006-release-automation: Added YAML (GitHub Actions), PowerShell 5.1+, Bash (GitHub Actions runner) + GitHub Actions (`actions/checkout@v4`, `actions/setup-node@v4`), GitHub CLI (`gh`)
 - 005-nav-control: Added TypeScript 5 + React 18 + Next.js 14 (App Router)
-- 004-consolidate-sample-tests: Added TypeScript 5 + React 18 + Next.js 14 (App Router), Vitest 1.6, Playwright 1.45, React Testing Library 16
 
 
 

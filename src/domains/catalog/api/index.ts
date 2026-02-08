@@ -1,12 +1,7 @@
 /**
- * Catalog ドメイン - API 暫定スキャフォールド
- * サンプル実装の再エクスポート（本番実装で置き換え予定）
+ * Catalog ドメイン - API エクスポート
  */
-export {
-  getProducts,
-  getProductById,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  NotFoundError,
-} from '@/samples/domains/catalog/api';
+export { getProducts, getProductById, NotFoundError, type CatalogContext } from './usecases';
+
+// 管理系ユースケースはサンプル実装を維持
+export { createProduct, updateProduct, deleteProduct } from '@/samples/domains/catalog/api';
