@@ -21,6 +21,7 @@ function createMockProduct(overrides: Partial<Product> = {}): Product {
     price: 1000,
     description: '商品の説明文です。',
     imageUrl: 'https://example.com/image.jpg',
+    stock: 10,
     status: 'published',
     createdAt: new Date('2024-01-15T10:00:00Z'),
     updatedAt: new Date('2024-01-15T10:00:00Z'),

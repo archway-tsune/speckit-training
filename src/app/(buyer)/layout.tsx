@@ -75,8 +75,8 @@ export default function BuyerLayout({
   }, [fetchCartCount]);
 
   const navLinks: NavLink[] = [
+    { href: '/catalog', label: '商品一覧' },
     // ドメイン実装時にリンクを追加する:
-    // { href: '/catalog', label: '商品一覧' },
     // { href: '/cart', label: 'カート' },
     // { href: '/orders', label: '注文履歴' },
   ];

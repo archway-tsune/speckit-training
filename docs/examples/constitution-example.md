@@ -64,6 +64,16 @@
 - 定数: UPPER_SNAKE_CASE (例: MAX_ITEMS)
 - 型: PascalCase (例: ProductType)
 
+## E2Eテスト作成時の注意事項
+
+- テスト作成時は `src/samples/tests/e2e/domains/` 配下のサンプルE2Eテストを参照すること
+
+## E2Eテスト実行時の注意事項
+
+- E2Eテスト実行前にポート3000を占有している既存プロセスを必ず停止する
+- Windows環境ではBashの `$_` がextglobで壊れるため、PowerShellスクリプトは `powershell.exe -File -` + heredocで実行する
+- データ変更後は `.next` キャッシュを削除してからサーバーを再起動する（`globalThis` のインメモリストアがHMRで残るため）
+
 すべての仕様書・計画・タスク・実装に関するドキュメントは日本語で記述すること。
 プロジェクト憲章は、見出し・本文ともにすべて日本語で作成すること。
 ```

@@ -69,7 +69,7 @@ export async function getProducts(
 
   const [products, total] = await Promise.all([
     context.repository.findAll({ status, offset, limit }),
-    context.repository.count(status),
+    context.repository.count({ status }),
   ]);
 
   return {
@@ -124,6 +124,7 @@ export async function createProduct(
     price: input.price,
     description: input.description,
     imageUrl: input.imageUrl,
+    stock: input.stock ?? 0,
     status: input.status || 'draft',
   });
 
@@ -152,6 +153,7 @@ export async function updateProduct(
     price: input.price,
     description: input.description,
     imageUrl: input.imageUrl,
+    stock: input.stock,
     status: input.status,
   });
 

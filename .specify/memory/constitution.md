@@ -88,6 +88,16 @@
 - E2Eテスト: 主要ユーザー導線をカバー（MUST）
 - パフォーマンス: 一覧ページ初回ロード3秒以内（SHOULD）
 
+### E2Eテスト作成時の注意事項
+
+- テスト作成時は `src/samples/tests/e2e/domains/` 配下のサンプルE2Eテストを参照すること
+
+### E2Eテスト実行時の注意事項
+
+- E2Eテスト実行前にポート3000を占有している既存プロセスを必ず停止する
+- Windows環境ではBashの `$_` がextglobで壊れるため、PowerShellスクリプトは `powershell.exe -File -` + heredocで実行する
+- データ変更後は `.next` キャッシュを削除してからサーバーを再起動する（`globalThis` のインメモリストアがHMRで残るため）
+
 ### 認証・認可
 
 - ロール: buyer（購入者）、admin（管理者）
