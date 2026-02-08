@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Test
+coverage/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Temporary
+*.tmp
+*.swp
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Lock files (use pnpm-lock.yaml)
+package-lock.json
+yarn.lock
+
+# Distribution
+*.zip
+nul
+.claude/settings.local.json
+.claude/settings.local.json
