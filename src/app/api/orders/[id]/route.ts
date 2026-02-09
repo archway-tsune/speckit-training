@@ -2,7 +2,7 @@
  * 注文詳細・ステータス更新API
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrderById, updateOrderStatus, NotFoundError, InvalidStatusTransitionError, NotImplementedError } from '@/domains/orders/api';
+import { getOrderById, updateOrderStatus, NotFoundError, InvalidStatusTransitionError } from '@/domains/orders/api';
 import { orderRepository, cartFetcher } from '@/infrastructure/repositories';
 import { getServerSession } from '@/infrastructure/auth';
 import { success, error } from '@/foundation/errors/response';
@@ -31,12 +31,6 @@ export async function GET(request: NextRequest, { params }: Params) {
 
     return NextResponse.json(success(result));
   } catch (err) {
-    if (err instanceof NotImplementedError) {
-      return NextResponse.json(
-        error(ErrorCode.NOT_IMPLEMENTED, err.message),
-        { status: 501 }
-      );
-    }
     if (err instanceof NotFoundError) {
       return NextResponse.json(
         error(ErrorCode.NOT_FOUND, err.message),
@@ -71,12 +65,6 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
     return NextResponse.json(success(result));
   } catch (err) {
-    if (err instanceof NotImplementedError) {
-      return NextResponse.json(
-        error(ErrorCode.NOT_IMPLEMENTED, err.message),
-        { status: 501 }
-      );
-    }
     if (err instanceof ForbiddenError) {
       return NextResponse.json(
         error(ErrorCode.FORBIDDEN, err.message),

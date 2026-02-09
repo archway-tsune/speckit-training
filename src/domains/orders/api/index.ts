@@ -1,60 +1,185 @@
 /**
- * Orders ドメイン - API スタブ実装
- * 本番実装で置き換え予定。すべての関数は NotImplementedError をスローする。
+ * Orders ドメイン - API ユースケース
+ * 注文関連のビジネスロジック
  */
+import type { Session } from '@/foundation/auth/session';
+import { authorize } from '@/foundation/auth/authorize';
+import { validate } from '@/foundation/validation/runtime';
+import {
+  GetOrdersInputSchema,
+  GetOrderByIdInputSchema,
+  CreateOrderInputSchema,
+  UpdateOrderStatusInputSchema,
+  ValidStatusTransitions,
+  type OrderItem,
+  type OrderStatus,
+  type GetOrdersOutput,
+  type GetOrderByIdOutput,
+  type CreateOrderOutput,
+  type UpdateOrderStatusOutput,
+  type OrderRepository,
+  type CartFetcher,
+} from '@/contracts/orders';
 
-/**
- * ドメイン未実装エラー
- */
-export class NotImplementedError extends Error {
-  constructor(domain: string, operation: string) {
-    super(`ドメイン未実装: ${domain}.${operation}`);
-    this.name = 'NotImplementedError';
-  }
+export type { OrderRepository, CartFetcher } from '@/contracts/orders';
+
+// ─────────────────────────────────────────────────────────────────
+// コンテキスト
+// ─────────────────────────────────────────────────────────────────
+
+export interface OrdersContext {
+  session: Session;
+  repository: OrderRepository;
+  cartFetcher: CartFetcher;
 }
 
-/**
- * リソース未存在エラー（スタブ）
- */
+// ─────────────────────────────────────────────────────────────────
+// エラー
+// ─────────────────────────────────────────────────────────────────
+
 export class NotFoundError extends Error {
-  constructor(message = 'リソースが見つかりません') {
+  constructor(message: string) {
     super(message);
     this.name = 'NotFoundError';
   }
 }
 
-/**
- * カート空エラー（スタブ）
- */
 export class EmptyCartError extends Error {
-  constructor(message = 'カートが空です') {
-    super(message);
+  constructor() {
+    super('カートが空です');
     this.name = 'EmptyCartError';
   }
 }
 
-/**
- * 不正なステータス遷移エラー（スタブ）
- */
 export class InvalidStatusTransitionError extends Error {
-  constructor(message = '不正なステータス遷移です') {
-    super(message);
+  constructor(currentStatus: OrderStatus, targetStatus: OrderStatus) {
+    super(`ステータスを ${currentStatus} から ${targetStatus} に変更できません`);
     this.name = 'InvalidStatusTransitionError';
   }
 }
 
-export function getOrders(..._args: unknown[]): never {
-  throw new NotImplementedError('orders', 'getOrders');
+// ─────────────────────────────────────────────────────────────────
+// 注文一覧取得
+// ─────────────────────────────────────────────────────────────────
+
+export async function getOrders(
+  rawInput: unknown,
+  context: OrdersContext
+): Promise<GetOrdersOutput> {
+  const input = validate(GetOrdersInputSchema, rawInput);
+
+  const page = input.page ?? 1;
+  const limit = input.limit ?? 20;
+
+  const userId = context.session.role === 'buyer' ? context.session.userId : input.userId;
+
+  const offset = (page - 1) * limit;
+
+  const [orders, total] = await Promise.all([
+    context.repository.findAll({
+      userId,
+      status: input.status,
+      offset,
+      limit,
+    }),
+    context.repository.count({ userId, status: input.status }),
+  ]);
+
+  return {
+    orders,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 }
 
-export function getOrderById(..._args: unknown[]): never {
-  throw new NotImplementedError('orders', 'getOrderById');
+// ─────────────────────────────────────────────────────────────────
+// 注文詳細取得
+// ─────────────────────────────────────────────────────────────────
+
+export async function getOrderById(
+  rawInput: unknown,
+  context: OrdersContext
+): Promise<GetOrderByIdOutput> {
+  const input = validate(GetOrderByIdInputSchema, rawInput);
+
+  const order = await context.repository.findById(input.id);
+
+  if (!order) {
+    throw new NotFoundError('注文が見つかりません');
+  }
+
+  if (context.session.role === 'buyer' && order.userId !== context.session.userId) {
+    throw new NotFoundError('注文が見つかりません');
+  }
+
+  return order;
 }
 
-export function createOrder(..._args: unknown[]): never {
-  throw new NotImplementedError('orders', 'createOrder');
+// ─────────────────────────────────────────────────────────────────
+// 注文作成
+// ─────────────────────────────────────────────────────────────────
+
+export async function createOrder(
+  rawInput: unknown,
+  context: OrdersContext
+): Promise<CreateOrderOutput> {
+  authorize(context.session, 'buyer');
+
+  validate(CreateOrderInputSchema, rawInput);
+
+  const cart = await context.cartFetcher.getByUserId(context.session.userId);
+
+  if (!cart || cart.items.length === 0) {
+    throw new EmptyCartError();
+  }
+
+  const orderItems: OrderItem[] = cart.items.map((item) => ({
+    productId: item.productId,
+    productName: item.productName,
+    price: item.price,
+    quantity: item.quantity,
+  }));
+
+  const order = await context.repository.create({
+    userId: context.session.userId,
+    items: orderItems,
+    totalAmount: cart.subtotal,
+    status: 'pending',
+  });
+
+  await context.cartFetcher.clear(context.session.userId);
+
+  return order;
 }
 
-export function updateOrderStatus(..._args: unknown[]): never {
-  throw new NotImplementedError('orders', 'updateOrderStatus');
+// ─────────────────────────────────────────────────────────────────
+// 注文ステータス更新
+// ─────────────────────────────────────────────────────────────────
+
+export async function updateOrderStatus(
+  rawInput: unknown,
+  context: OrdersContext
+): Promise<UpdateOrderStatusOutput> {
+  authorize(context.session, 'admin');
+
+  const input = validate(UpdateOrderStatusInputSchema, rawInput);
+
+  const order = await context.repository.findById(input.id);
+
+  if (!order) {
+    throw new NotFoundError('注文が見つかりません');
+  }
+
+  const validTransitions = ValidStatusTransitions[order.status];
+  if (!validTransitions.includes(input.status)) {
+    throw new InvalidStatusTransitionError(order.status, input.status);
+  }
+
+  const updatedOrder = await context.repository.updateStatus(input.id, input.status);
+
+  return updatedOrder;
 }
