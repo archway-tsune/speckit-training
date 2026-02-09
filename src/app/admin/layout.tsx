@@ -87,6 +87,7 @@ export default function AdminLayout({
   }
 
   const navLinks = [
+    { href: '/admin/products', label: '商品管理' },
     { href: '/admin/orders', label: '注文管理' },
   ];
 
