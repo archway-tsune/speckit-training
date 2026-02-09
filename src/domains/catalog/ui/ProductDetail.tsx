@@ -14,6 +14,7 @@ export interface ProductDetailProps {
   isLoading: boolean;
   error?: string;
   onAddToCart?: (productId: string) => void;
+  isAddingToCart?: boolean;
   onBack?: () => void;
 }
 
@@ -26,6 +27,7 @@ export function ProductDetail({
   isLoading,
   error,
   onAddToCart,
+  isAddingToCart = false,
   onBack,
 }: ProductDetailProps) {
   if (isLoading) {
@@ -111,10 +113,10 @@ export function ProductDetail({
             <button
               type="button"
               onClick={() => onAddToCart(product.id)}
-              disabled={product.stock === 0}
+              disabled={product.stock === 0 || isAddingToCart}
               className="mt-8 w-full rounded-md bg-base-900 px-6 py-3 text-base font-medium text-base-50 hover:bg-base-900/90 focus:outline-none focus:ring-2 focus:ring-base-900 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              カートに追加
+              {isAddingToCart ? '追加中...' : 'カートに追加'}
             </button>
           )}
         </div>

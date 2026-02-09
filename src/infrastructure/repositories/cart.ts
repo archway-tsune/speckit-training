@@ -127,6 +127,7 @@ export const productFetcher: ProductFetcher = {
       name: product.name,
       price: product.price,
       imageUrl: product.imageUrl,
+      stock: product.stock,
     };
   },
 };

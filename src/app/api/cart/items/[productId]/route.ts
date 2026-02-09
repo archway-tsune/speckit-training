@@ -2,7 +2,7 @@
  * カート更新・削除API
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { updateCartItem, removeFromCart, CartItemNotFoundError, NotImplementedError } from '@/domains/cart/api';
+import { updateCartItem, removeFromCart, CartItemNotFoundError } from '@/domains/cart/api';
 import { cartRepository, productFetcher } from '@/infrastructure/repositories';
 import { getServerSession } from '@/infrastructure/auth';
 import { success, error } from '@/foundation/errors/response';
@@ -30,13 +30,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     });
 
     return NextResponse.json(success(result));
-  } catch (err) {
-    if (err instanceof NotImplementedError) {
-      return NextResponse.json(
-        error(ErrorCode.NOT_IMPLEMENTED, err.message),
-        { status: 501 }
-      );
-    }
+  } catch (err: unknown) {
     if (err instanceof CartItemNotFoundError) {
       return NextResponse.json(
         error(ErrorCode.NOT_FOUND, err.message),
@@ -75,13 +69,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     });
 
     return NextResponse.json(success(result));
-  } catch (err) {
-    if (err instanceof NotImplementedError) {
-      return NextResponse.json(
-        error(ErrorCode.NOT_IMPLEMENTED, err.message),
-        { status: 501 }
-      );
-    }
+  } catch (err: unknown) {
     if (err instanceof CartItemNotFoundError) {
       return NextResponse.json(
         error(ErrorCode.NOT_FOUND, err.message),
