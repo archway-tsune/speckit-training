@@ -175,29 +175,33 @@ it('適切なARIAラベルが設定されている', () => {
 ### 確認ダイアログ
 
 ```tsx
-// デフォルト（プライマリボタン）
 import { ConfirmDialog } from '@/templates/ui/components/dialog';
 
+// デフォルト（確認ボタン: bg-base-900、キャンセルボタン: border）
 <ConfirmDialog
   open={isOpen}
   message="この操作を実行しますか？"
   onConfirm={handleConfirm}
   onCancel={() => setIsOpen(false)}
 />
+// → confirmLabel="確認"、cancelLabel="キャンセル" がデフォルト
 
-// 危険な操作（赤いボタン）
+// 危険な操作（確認ボタン: bg-red-600）
 <ConfirmDialog
   open={isOpen}
   title="商品の削除"
   message="この商品をカートから削除しますか？"
   confirmLabel="削除する"
+  cancelLabel="やめる"
   variant="danger"
   onConfirm={handleDelete}
   onCancel={() => setIsOpen(false)}
 />
 ```
 
+- ボタン配置: キャンセル（左）→ 確認（右）
 - `role="dialog"` + `aria-modal="true"` で支援技術に通知
+- `aria-labelledby`（タイトルあり時）+ `aria-describedby` でメッセージを関連付け
 - Escapeキーまたはオーバーレイクリックで閉じる
 - キャンセルボタンに自動フォーカス
 
@@ -341,33 +345,45 @@ formatDateTime('invalid');               // → '-'
 ```
 src/templates/ui/
 ├── components/
-│   ├── layout/         # レイアウト関連
-│   │   ├── Header.tsx
-│   │   ├── Footer.tsx
-│   │   └── Layout.tsx
-│   ├── status/         # 状態表示
-│   │   ├── Loading.tsx
-│   │   ├── Error.tsx
-│   │   └── Empty.tsx
-│   ├── dialog/         # ダイアログ
-│   │   └── ConfirmDialog.tsx
 │   ├── auth/           # 認証関連
 │   │   └── Forbidden.tsx
-│   ├── navigation/     # ナビゲーション
-│   │   └── Pagination.tsx
 │   ├── data-display/   # データ表示
+│   │   ├── ImagePlaceholder.tsx
 │   │   ├── StatusBadge.tsx
-│   │   └── ImagePlaceholder.tsx
-│   └── form/           # フォーム
-│       ├── FormField.tsx
-│       ├── SearchBar.tsx
-│       └── QuantitySelector.tsx
+│   │   └── index.ts
+│   ├── dialog/         # ダイアログ
+│   │   ├── ConfirmDialog.tsx
+│   │   └── index.ts
+│   ├── form/           # フォーム
+│   │   ├── FormField.tsx
+│   │   ├── QuantitySelector.tsx
+│   │   ├── SearchBar.tsx
+│   │   └── index.ts
+│   ├── layout/         # レイアウト関連
+│   │   ├── Footer.tsx
+│   │   ├── Header.tsx
+│   │   └── Layout.tsx
+│   ├── navigation/     # ナビゲーション
+│   │   ├── Pagination.tsx
+│   │   └── index.ts
+│   └── status/         # 状態表示
+│       ├── Empty.tsx
+│       ├── Error.tsx
+│       └── Loading.tsx
+├── layouts/            # ロール別レイアウト
+│   ├── AdminLayout.tsx
+│   ├── BuyerLayout.tsx
+│   └── index.ts
+├── pages/              # 画面テンプレート
+│   ├── detail.tsx
+│   ├── form.tsx
+│   ├── list.tsx
+│   ├── login.tsx
+│   ├── logout.tsx
+│   └── index.ts
 ├── utils/
 │   ├── events.ts       # カスタムイベント
-│   └── format.ts       # 価格・日時フォーマット
-├── pages/              # 画面テンプレート
-│   ├── list.tsx
-│   ├── detail.tsx
-│   └── form.tsx
+│   ├── format.ts       # 価格・日時フォーマット
+│   └── index.ts
 └── DESIGN_GUIDE.md     # 本ファイル
 ```

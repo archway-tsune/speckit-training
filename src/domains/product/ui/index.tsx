@@ -7,6 +7,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ConfirmDialog } from '@/templates/ui/components/dialog/ConfirmDialog';
 
 // ─────────────────────────────────────────────────────────────────
 // AdminProductList
@@ -184,28 +185,14 @@ export function AdminProductList() {
         </>
       )}
 
-      {/* 削除確認ダイアログ */}
-      {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="rounded-lg bg-white p-6 shadow-xl">
-            <p className="mb-4">「{deleteTarget.name}」を削除しますか？</p>
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={cancelDelete}
-                className="rounded border px-4 py-2 text-sm hover:bg-base-100"
-              >
-                キャンセル
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="rounded bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700"
-              >
-                削除する
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        message={`「${deleteTarget?.name ?? ''}」を削除しますか？`}
+        confirmLabel="削除する"
+        variant="danger"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 }

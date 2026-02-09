@@ -52,13 +52,13 @@ export interface ConfirmDialogProps {
 
 const confirmButtonStyles = {
   default:
-    'rounded-full bg-base-900 px-6 py-2 text-sm font-medium text-base-50 hover:bg-base-900/90 focus:outline-none focus:ring-2 focus:ring-base-900 focus:ring-offset-2',
+    'rounded-md bg-base-900 px-6 py-2 text-sm font-medium text-base-50 hover:bg-base-900/90 focus:outline-none focus:ring-2 focus:ring-base-900 focus:ring-offset-2',
   danger:
-    'rounded-full bg-red-600 px-6 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2',
+    'rounded-md bg-red-600 px-6 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2',
 };
 
 const cancelButtonStyles =
-  'rounded-full border border-base-900/20 px-6 py-2 text-sm font-medium text-base-900 hover:bg-base-100 focus:outline-none focus:ring-2 focus:ring-base-900 focus:ring-offset-2';
+  'rounded-md border border-base-900/20 px-6 py-2 text-sm font-medium text-base-900 hover:bg-base-100 focus:outline-none focus:ring-2 focus:ring-base-900 focus:ring-offset-2';
 
 // ─────────────────────────────────────────────────────────────────
 // コンポーネント
