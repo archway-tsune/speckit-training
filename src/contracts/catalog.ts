@@ -18,6 +18,7 @@ export const ProductSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).max(200),
   price: z.number().int().min(0),
+  stock: z.number().int().min(0),
   description: z.string().max(2000).optional(),
   imageUrl: z.string().url().optional(),
   status: ProductStatusSchema,
@@ -40,6 +41,8 @@ export const GetProductsInputSchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
   /** ステータスフィルタ（admin のみ draft/archived 指定可） */
   status: ProductStatusSchema.optional(),
+  /** 検索キーワード（商品名・説明文の部分一致） */
+  keyword: z.string().optional(),
 });
 export type GetProductsInput = z.infer<typeof GetProductsInputSchema>;
 
@@ -85,6 +88,7 @@ export type GetProductByIdOutput = z.infer<typeof GetProductByIdOutputSchema>;
 export const CreateProductInputSchema = z.object({
   name: z.string().min(1, '商品名を入力してください').max(200, '商品名は200文字以内で入力してください'),
   price: z.number().int().min(0, '価格は0以上で入力してください'),
+  stock: z.number().int().min(0, '在庫数は0以上で入力してください'),
   description: z.string().max(2000, '商品説明は2000文字以内で入力してください').optional(),
   imageUrl: z.string().url('有効なURLを入力してください').optional(),
   status: ProductStatusSchema.default('draft'),
@@ -108,6 +112,7 @@ export const UpdateProductInputSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).max(200).optional(),
   price: z.number().int().min(0).optional(),
+  stock: z.number().int().min(0).optional(),
   description: z.string().max(2000).optional(),
   imageUrl: z.string().url().optional(),
   status: ProductStatusSchema.optional(),
@@ -149,6 +154,7 @@ export interface ProductRepository {
     status?: Product['status'];
     offset: number;
     limit: number;
+    keyword?: string;
   }): Promise<Product[]>;
   findById(id: string): Promise<Product | null>;
   create(
@@ -159,5 +165,5 @@ export interface ProductRepository {
     data: Partial<Omit<Product, 'id' | 'createdAt' | 'updatedAt'>>
   ): Promise<Product>;
   delete(id: string): Promise<void>;
-  count(status?: Product['status']): Promise<number>;
+  count(status?: Product['status'], keyword?: string): Promise<number>;
 }

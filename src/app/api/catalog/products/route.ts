@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
       limit: searchParams.get('limit') || '20',
       // 未認証の場合はpublishedのみ表示
       status: session ? (searchParams.get('status') || undefined) : 'published',
+      keyword: searchParams.get('keyword') || undefined,
     };
 
     const result = await getProducts(input, {
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(success(result));
-  } catch (err) {
+  } catch (err: unknown) {
     if (err instanceof NotImplementedError) {
       return NextResponse.json(
         error(ErrorCode.NOT_IMPLEMENTED, err.message),
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(success(result), { status: 201 });
-  } catch (err) {
+  } catch (err: unknown) {
     if (err instanceof NotImplementedError) {
       return NextResponse.json(
         error(ErrorCode.NOT_IMPLEMENTED, err.message),

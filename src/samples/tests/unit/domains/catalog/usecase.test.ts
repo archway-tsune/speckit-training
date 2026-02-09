@@ -33,6 +33,7 @@ function createMockProduct(overrides: Partial<Product> = {}): Product {
     id: '550e8400-e29b-41d4-a716-446655440000',
     name: 'テスト商品',
     price: 1000,
+    stock: 10,
     description: '商品の説明',
     imageUrl: 'https://example.com/image.jpg',
     status: 'published',
@@ -178,7 +179,7 @@ describe('createProduct', () => {
         vi.mocked(repository.create).mockResolvedValue(newProduct);
 
         const result = await createProduct(
-          { name: 'テスト商品', price: 1000 },
+          { name: 'テスト商品', price: 1000, stock: 10 },
           { session: createMockSession('admin'), repository }
         );
 
@@ -193,7 +194,7 @@ describe('createProduct', () => {
       it('Then: ValidationErrorをスローする', async () => {
         await expect(
           createProduct(
-            { name: 'テスト', price: -100 },
+            { name: 'テスト', price: -100, stock: 10 },
             { session: createMockSession('admin'), repository }
           )
         ).rejects.toThrow(ValidationError);
@@ -206,7 +207,7 @@ describe('createProduct', () => {
       it('Then: AuthorizationErrorをスローする', async () => {
         await expect(
           createProduct(
-            { name: 'テスト', price: 1000 },
+            { name: 'テスト', price: 1000, stock: 10 },
             { session: createMockSession('buyer'), repository }
           )
         ).rejects.toThrow(AuthorizationError);

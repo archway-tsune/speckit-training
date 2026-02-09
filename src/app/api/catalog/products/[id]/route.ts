@@ -24,7 +24,7 @@ export async function GET(request: NextRequest, { params }: Params) {
     });
 
     return NextResponse.json(success(result));
-  } catch (err) {
+  } catch (err: unknown) {
     if (err instanceof NotImplementedError) {
       return NextResponse.json(
         error(ErrorCode.NOT_IMPLEMENTED, err.message),
@@ -63,7 +63,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
     });
 
     return NextResponse.json(success(result));
-  } catch (err) {
+  } catch (err: unknown) {
     if (err instanceof NotImplementedError) {
       return NextResponse.json(
         error(ErrorCode.NOT_IMPLEMENTED, err.message),
@@ -113,7 +113,7 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     });
 
     return NextResponse.json(success(result));
-  } catch (err) {
+  } catch (err: unknown) {
     if (err instanceof NotImplementedError) {
       return NextResponse.json(
         error(ErrorCode.NOT_IMPLEMENTED, err.message),
