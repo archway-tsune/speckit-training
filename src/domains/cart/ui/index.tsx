@@ -281,6 +281,16 @@ export function CartView() {
         </div>
       </div>
 
+      {/* 注文手続きへボタン */}
+      <div className="mt-6 flex justify-end">
+        <Link
+          href="/checkout"
+          className="rounded-md bg-base-900 px-8 py-3 text-sm font-medium text-base-50 hover:bg-base-900/90"
+        >
+          注文手続きへ
+        </Link>
+      </div>
+
       <ConfirmDialog
         open={!!deleteTarget}
         message={`「${deleteTarget?.productName ?? ''}」をカートから削除しますか？`}

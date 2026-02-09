@@ -2,7 +2,7 @@
  * 注文一覧・作成API
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrders, createOrder, EmptyCartError, NotImplementedError } from '@/domains/orders/api';
+import { getOrders, createOrder, EmptyCartError } from '@/domains/orders/api';
 import { orderRepository, cartFetcher } from '@/infrastructure/repositories';
 import { getServerSession } from '@/infrastructure/auth';
 import { success, error } from '@/foundation/errors/response';
@@ -35,12 +35,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(success(result));
   } catch (err) {
-    if (err instanceof NotImplementedError) {
-      return NextResponse.json(
-        error(ErrorCode.NOT_IMPLEMENTED, err.message),
-        { status: 501 }
-      );
-    }
     console.error('GET /api/orders error:', err);
     return NextResponse.json(
       error(ErrorCode.INTERNAL_ERROR, 'システムエラーが発生しました'),
@@ -68,12 +62,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(success(result), { status: 201 });
   } catch (err) {
-    if (err instanceof NotImplementedError) {
-      return NextResponse.json(
-        error(ErrorCode.NOT_IMPLEMENTED, err.message),
-        { status: 501 }
-      );
-    }
     if (err instanceof EmptyCartError) {
       return NextResponse.json(
         error(ErrorCode.VALIDATION_ERROR, err.message),
