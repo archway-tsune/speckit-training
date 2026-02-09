@@ -8,10 +8,12 @@ import {
   GetProductsInputSchema,
   GetProductsOutputSchema,
   GetProductByIdOutputSchema,
-  CreateProductInputSchema,
-  CreateProductOutputSchema,
   type Product,
 } from '@/contracts/catalog';
+import {
+  CreateProductInputSchema,
+  CreateProductOutputSchema,
+} from '@/contracts/product';
 import {
   getProducts,
   getProductById,

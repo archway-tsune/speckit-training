@@ -32,38 +32,6 @@ export class NotFoundError extends Error {
   }
 }
 
-export class NotImplementedError extends Error {
-  constructor(message = '未実装の機能です') {
-    super(message);
-    this.name = 'NotImplementedError';
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────
-// 未実装スタブ（スコープ外）
-// ─────────────────────────────────────────────────────────────────
-
-export async function createProduct(
-  _input: unknown,
-  _context: CatalogContext
-): Promise<never> {
-  throw new NotImplementedError('商品登録は未実装です');
-}
-
-export async function updateProduct(
-  _input: unknown,
-  _context: CatalogContext
-): Promise<never> {
-  throw new NotImplementedError('商品更新は未実装です');
-}
-
-export async function deleteProduct(
-  _input: unknown,
-  _context: CatalogContext
-): Promise<never> {
-  throw new NotImplementedError('商品削除は未実装です');
-}
-
 // ─────────────────────────────────────────────────────────────────
 // 商品一覧取得
 // ─────────────────────────────────────────────────────────────────

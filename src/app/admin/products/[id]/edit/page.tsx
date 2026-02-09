@@ -1,10 +1,7 @@
+'use client';
+
+import { AdminProductDetail } from '@/domains/product/ui/admin';
+
 export default function EditProductPage() {
-  return (
-    <div className="flex min-h-[50vh] items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-base-900">商品編集</h1>
-        <p className="mt-4 text-base-900/60">ドメイン未実装</p>
-      </div>
-    </div>
-  );
+  return <AdminProductDetail />;
 }

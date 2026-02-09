@@ -1,40 +1,31 @@
 /**
- * Catalog ドメイン - ユースケース
- * 商品関連のビジネスロジック
+ * Product ドメイン - API 本番実装
+ * 管理者向け商品管理のビジネスロジック
  */
 import type { Session } from '@/foundation/auth/session';
-import { authorize, AuthorizationError } from '@/foundation/auth/authorize';
-import { validate, ValidationError } from '@/foundation/validation/runtime';
+import { authorize, ForbiddenError } from '@/foundation/auth/authorize';
+import { validate } from '@/foundation/validation/runtime';
 import {
   GetProductsInputSchema,
   GetProductByIdInputSchema,
-  type Product,
-  type GetProductsInput,
-  type GetProductsOutput,
-  type GetProductByIdInput,
-  type GetProductByIdOutput,
-  type ProductRepository,
-} from '@/contracts/catalog';
-import {
   CreateProductInputSchema,
   UpdateProductInputSchema,
+  UpdateProductStatusInputSchema,
   DeleteProductInputSchema,
-  type CreateProductInput,
+  type GetProductsOutput,
+  type GetProductByIdOutput,
   type CreateProductOutput,
-  type UpdateProductInput,
   type UpdateProductOutput,
-  type DeleteProductInput,
+  type UpdateProductStatusOutput,
   type DeleteProductOutput,
+  type ProductRepository,
 } from '@/contracts/product';
-
-// 既存の外部参照を維持するための再エクスポート
-export type { ProductRepository } from '@/contracts/catalog';
 
 // ─────────────────────────────────────────────────────────────────
 // コンテキスト
 // ─────────────────────────────────────────────────────────────────
 
-export interface CatalogContext {
+export interface ProductContext {
   session: Session;
   repository: ProductRepository;
 }
@@ -44,29 +35,29 @@ export interface CatalogContext {
 // ─────────────────────────────────────────────────────────────────
 
 export class NotFoundError extends Error {
-  constructor(message: string) {
+  constructor(message = '商品が見つかりません') {
     super(message);
     this.name = 'NotFoundError';
   }
 }
 
+export { ForbiddenError };
+
 // ─────────────────────────────────────────────────────────────────
-// 商品一覧取得
+// 商品一覧取得（管理者用）
 // ─────────────────────────────────────────────────────────────────
 
 export async function getProducts(
   rawInput: unknown,
-  context: CatalogContext
+  context: ProductContext
 ): Promise<GetProductsOutput> {
+  authorize(context.session, 'admin');
+
   const input = validate(GetProductsInputSchema, rawInput);
 
-  // デフォルト値が適用された後の値を取得
   const page = input.page ?? 1;
   const limit = input.limit ?? 20;
-
-  // buyerはpublished商品のみ取得可能
-  const status = context.session.role === 'buyer' ? 'published' : (input.status || undefined);
-
+  const status = input.status || undefined;
   const keyword = input.keyword || undefined;
   const offset = (page - 1) * limit;
 
@@ -81,29 +72,26 @@ export async function getProducts(
       page,
       limit,
       total,
-      totalPages: Math.ceil(total / limit),
+      totalPages: total === 0 ? 0 : Math.ceil(total / limit),
     },
   };
 }
 
 // ─────────────────────────────────────────────────────────────────
-// 商品詳細取得
+// 商品詳細取得（管理者用）
 // ─────────────────────────────────────────────────────────────────
 
 export async function getProductById(
   rawInput: unknown,
-  context: CatalogContext
+  context: ProductContext
 ): Promise<GetProductByIdOutput> {
+  authorize(context.session, 'admin');
+
   const input = validate(GetProductByIdInputSchema, rawInput);
 
   const product = await context.repository.findById(input.id);
 
   if (!product) {
-    throw new NotFoundError('商品が見つかりません');
-  }
-
-  // buyerはpublished商品のみ閲覧可能
-  if (context.session.role === 'buyer' && product.status !== 'published') {
     throw new NotFoundError('商品が見つかりません');
   }
 
@@ -116,7 +104,7 @@ export async function getProductById(
 
 export async function createProduct(
   rawInput: unknown,
-  context: CatalogContext
+  context: ProductContext
 ): Promise<CreateProductOutput> {
   authorize(context.session, 'admin');
 
@@ -135,12 +123,12 @@ export async function createProduct(
 }
 
 // ─────────────────────────────────────────────────────────────────
-// 商品更新
+// 商品更新（部分更新）
 // ─────────────────────────────────────────────────────────────────
 
 export async function updateProduct(
   rawInput: unknown,
-  context: CatalogContext
+  context: ProductContext
 ): Promise<UpdateProductOutput> {
   authorize(context.session, 'admin');
 
@@ -164,12 +152,36 @@ export async function updateProduct(
 }
 
 // ─────────────────────────────────────────────────────────────────
+// ステータス変更
+// ─────────────────────────────────────────────────────────────────
+
+export async function updateProductStatus(
+  rawInput: unknown,
+  context: ProductContext
+): Promise<UpdateProductStatusOutput> {
+  authorize(context.session, 'admin');
+
+  const input = validate(UpdateProductStatusInputSchema, rawInput);
+
+  const existing = await context.repository.findById(input.id);
+  if (!existing) {
+    throw new NotFoundError('商品が見つかりません');
+  }
+
+  const product = await context.repository.update(input.id, {
+    status: input.status,
+  });
+
+  return product;
+}
+
+// ─────────────────────────────────────────────────────────────────
 // 商品削除
 // ─────────────────────────────────────────────────────────────────
 
 export async function deleteProduct(
   rawInput: unknown,
-  context: CatalogContext
+  context: ProductContext
 ): Promise<DeleteProductOutput> {
   authorize(context.session, 'admin');
 
