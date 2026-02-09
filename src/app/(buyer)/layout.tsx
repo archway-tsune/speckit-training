@@ -76,7 +76,7 @@ export default function BuyerLayout({
 
   const navLinks: NavLink[] = [
     { href: '/catalog', label: '商品一覧' },
-    // { href: '/cart', label: 'カート' },
+    { href: '/cart', label: 'カート' },
     // { href: '/orders', label: '注文履歴' },
   ];
 
@@ -93,7 +93,7 @@ export default function BuyerLayout({
           siteName: 'EC Site',
           navLinks,
           cartCount: 0,
-          cartUrl: '/',
+          cartUrl: '/cart',
           homeUrl: '/',
           isLoggedIn: false,
           loginHref: '/login',
@@ -116,7 +116,7 @@ export default function BuyerLayout({
         siteName: 'EC Site',
         navLinks,
         cartCount,
-        cartUrl: '/',
+        cartUrl: '/cart',
         homeUrl: '/',
         isLoggedIn: !!session,
         userName: session?.name,

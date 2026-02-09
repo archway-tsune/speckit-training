@@ -9,16 +9,18 @@ import {
   AddToCartInputSchema,
   AddToCartOutputSchema,
   UpdateCartItemInputSchema,
+  UpdateCartItemOutputSchema,
+  RemoveFromCartOutputSchema,
   type Cart,
+  type CartRepository,
+  type ProductFetcher,
 } from '@/contracts/cart';
 import {
   getCart,
   addToCart,
   updateCartItem,
   removeFromCart,
-  type CartRepository,
-  type ProductFetcher,
-} from '@/samples/domains/cart/api/usecases';
+} from '@/domains/cart/api';
 
 // ─────────────────────────────────────────────────────────────────
 // テストヘルパー
@@ -65,7 +67,7 @@ function createMockProductFetcher(): ProductFetcher {
 // 契約検証テスト
 // ─────────────────────────────────────────────────────────────────
 
-describe('Cart API統合テスト', () => {
+describe('Cart API統合テスト（本番ドメイン）', () => {
   let repository: CartRepository;
   let productFetcher: ProductFetcher;
 
@@ -75,7 +77,7 @@ describe('Cart API統合テスト', () => {
   });
 
   describe('getCart', () => {
-    it('出力スキーマに準拠したレスポンスを返す', async () => {
+    it('出力スキーマ（GetCartOutputSchema）に準拠したレスポンスを返す', async () => {
       const cart = createMockCart({
         items: [
           {
@@ -119,7 +121,7 @@ describe('Cart API統合テスト', () => {
       ).resolves.not.toThrow();
     });
 
-    it('出力スキーマに準拠したレスポンスを返す', async () => {
+    it('出力スキーマ（AddToCartOutputSchema）に準拠したレスポンスを返す', async () => {
       const cart = createMockCart({
         items: [
           {
@@ -176,6 +178,77 @@ describe('Cart API統合テスト', () => {
         expect(error.message).toBe('数量は1以上で指定してください');
       }
     });
+
+    it('出力スキーマ（UpdateCartItemOutputSchema）に準拠したレスポンスを返す', async () => {
+      const productId = '550e8400-e29b-41d4-a716-446655440002';
+      const existingCart = createMockCart({
+        items: [
+          {
+            productId,
+            productName: 'テスト商品',
+            price: 1000,
+            quantity: 1,
+            addedAt: new Date(),
+          },
+        ],
+      });
+      const updatedCart = createMockCart({
+        items: [
+          {
+            productId,
+            productName: 'テスト商品',
+            price: 1000,
+            quantity: 3,
+            addedAt: new Date(),
+          },
+        ],
+        subtotal: 3000,
+        itemCount: 3,
+      });
+
+      vi.mocked(repository.findByUserId).mockResolvedValue(existingCart);
+      vi.mocked(repository.updateItemQuantity).mockResolvedValue(updatedCart);
+      vi.mocked(productFetcher.findById).mockResolvedValue({
+        id: productId, name: 'テスト商品', price: 1000, stock: 10,
+      });
+
+      const result = await updateCartItem(
+        { productId, quantity: 3 },
+        { session: createMockSession(), repository, productFetcher }
+      );
+
+      const validated = UpdateCartItemOutputSchema.parse(result);
+      expect(validated.items[0].quantity).toBe(3);
+    });
+  });
+
+  describe('removeFromCart', () => {
+    it('出力スキーマ（RemoveFromCartOutputSchema）に準拠したレスポンスを返す', async () => {
+      const productId = '550e8400-e29b-41d4-a716-446655440002';
+      const existingCart = createMockCart({
+        items: [
+          {
+            productId,
+            productName: 'テスト商品',
+            price: 1000,
+            quantity: 1,
+            addedAt: new Date(),
+          },
+        ],
+      });
+      const emptyCart = createMockCart();
+
+      vi.mocked(repository.findByUserId).mockResolvedValue(existingCart);
+      vi.mocked(repository.removeItem).mockResolvedValue(emptyCart);
+
+      const result = await removeFromCart(
+        { productId },
+        { session: createMockSession(), repository, productFetcher }
+      );
+
+      const validated = RemoveFromCartOutputSchema.parse(result);
+      expect(validated.items).toHaveLength(0);
+    });
   });
 
   describe('実際のユースケースシナリオ', () => {
@@ -183,8 +256,6 @@ describe('Cart API統合テスト', () => {
       const productId = '550e8400-e29b-41d4-a716-446655440002';
       const product = { id: productId, name: 'テスト商品', price: 1000, stock: 10 };
 
-      // 初期カート
-      const emptyCart = createMockCart();
       const cartWithItem = createMockCart({
         items: [
           {
@@ -225,6 +296,7 @@ describe('Cart API統合テスト', () => {
         { session: createMockSession(), repository, productFetcher }
       );
       expect(afterAdd.items).toHaveLength(1);
+      AddToCartOutputSchema.parse(afterAdd);
 
       // 2. 数量更新
       const afterUpdate = await updateCartItem(
@@ -232,6 +304,7 @@ describe('Cart API統合テスト', () => {
         { session: createMockSession(), repository, productFetcher }
       );
       expect(afterUpdate.items[0].quantity).toBe(3);
+      UpdateCartItemOutputSchema.parse(afterUpdate);
 
       // 3. 削除
       const afterRemove = await removeFromCart(
@@ -239,6 +312,7 @@ describe('Cart API統合テスト', () => {
         { session: createMockSession(), repository, productFetcher }
       );
       expect(afterRemove.items).toHaveLength(0);
+      RemoveFromCartOutputSchema.parse(afterRemove);
     });
   });
 });

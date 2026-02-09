@@ -1,20 +1,18 @@
 /**
  * Cart ドメイン - ユースケース単体テスト
+ * TDD Red フェーズ: テストを先に書き、失敗を確認してから実装に着手する
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { Session } from '@/foundation/auth/session';
-import { AuthorizationError } from '@/foundation/auth/authorize';
+import type { Cart, CartRepository, ProductFetcher } from '@/contracts/cart';
 import {
   getCart,
   addToCart,
   updateCartItem,
   removeFromCart,
-  CartItemNotFoundError,
   NotFoundError,
-  type CartRepository,
-  type ProductFetcher,
-} from '@/samples/domains/cart/api/usecases';
-import type { Cart } from '@/contracts/cart';
+  CartItemNotFoundError,
+} from '@/domains/cart/api';
 
 // ─────────────────────────────────────────────────────────────────
 // テストヘルパー
@@ -58,7 +56,7 @@ function createMockProductFetcher(): ProductFetcher {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// カート取得
+// T005: getCart ユースケース
 // ─────────────────────────────────────────────────────────────────
 
 describe('getCart', () => {
@@ -102,26 +100,23 @@ describe('getCart', () => {
     });
   });
 
-  describe('Given: adminユーザー', () => {
+  describe('Given: セッションが無効', () => {
     describe('When: カートを取得する', () => {
-      it('Then: adminもbuyer権限を持つためカートを取得できる', async () => {
-        const cart = createMockCart();
-        vi.mocked(repository.findByUserId).mockResolvedValue(cart);
-
-        const result = await getCart({}, {
-          session: createMockSession('admin'),
-          repository,
-          productFetcher,
-        });
-
-        expect(result.id).toBe(cart.id);
+      it('Then: ForbiddenErrorをスローする', async () => {
+        await expect(
+          getCart({}, {
+            session: null as unknown as Session,
+            repository,
+            productFetcher,
+          })
+        ).rejects.toThrow('セッションが無効です');
       });
     });
   });
 });
 
 // ─────────────────────────────────────────────────────────────────
-// カート追加
+// T006: addToCart ユースケース
 // ─────────────────────────────────────────────────────────────────
 
 describe('addToCart', () => {
@@ -133,7 +128,7 @@ describe('addToCart', () => {
     productFetcher = createMockProductFetcher();
   });
 
-  describe('Given: buyerユーザーと存在する商品', () => {
+  describe('Given: buyerユーザーと在庫ありの商品', () => {
     describe('When: カートに追加する', () => {
       it('Then: 商品が追加されたカートを返す', async () => {
         const product = {
@@ -184,10 +179,66 @@ describe('addToCart', () => {
       });
     });
   });
+
+  describe('Given: 在庫切れの商品（stock === 0）', () => {
+    describe('When: カートに追加しようとする', () => {
+      it('Then: バリデーションエラーをスローする', async () => {
+        const product = {
+          id: '550e8400-e29b-41d4-a716-446655440002',
+          name: '在庫切れ商品',
+          price: 500,
+          stock: 0,
+        };
+        vi.mocked(productFetcher.findById).mockResolvedValue(product);
+
+        await expect(
+          addToCart(
+            { productId: product.id, quantity: 1 },
+            { session: createMockSession('buyer'), repository, productFetcher }
+          )
+        ).rejects.toThrow();
+      });
+    });
+  });
+
+  describe('Given: 在庫数を超える数量', () => {
+    describe('When: カートに追加しようとする', () => {
+      it('Then: バリデーションエラーをスローする', async () => {
+        const product = {
+          id: '550e8400-e29b-41d4-a716-446655440002',
+          name: 'テスト商品',
+          price: 1000,
+          stock: 3,
+        };
+        vi.mocked(productFetcher.findById).mockResolvedValue(product);
+
+        // カートに既に2個入っている状態で2個追加 → 合計4個 > 在庫3
+        const existingCart = createMockCart({
+          items: [
+            {
+              productId: product.id,
+              productName: product.name,
+              price: product.price,
+              quantity: 2,
+              addedAt: new Date(),
+            },
+          ],
+        });
+        vi.mocked(repository.findByUserId).mockResolvedValue(existingCart);
+
+        await expect(
+          addToCart(
+            { productId: product.id, quantity: 2 },
+            { session: createMockSession('buyer'), repository, productFetcher }
+          )
+        ).rejects.toThrow();
+      });
+    });
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────
-// カート更新
+// T007: updateCartItem ユースケース
 // ─────────────────────────────────────────────────────────────────
 
 describe('updateCartItem', () => {
@@ -230,6 +281,9 @@ describe('updateCartItem', () => {
 
         vi.mocked(repository.findByUserId).mockResolvedValue(existingCart);
         vi.mocked(repository.updateItemQuantity).mockResolvedValue(updatedCart);
+        vi.mocked(productFetcher.findById).mockResolvedValue({
+          id: productId, name: 'テスト商品', price: 1000, stock: 10,
+        });
 
         const result = await updateCartItem(
           { productId, quantity: 3 },
@@ -255,10 +309,41 @@ describe('updateCartItem', () => {
       });
     });
   });
+
+  describe('Given: 在庫数を超える数量', () => {
+    describe('When: 数量を更新しようとする', () => {
+      it('Then: バリデーションエラーをスローする', async () => {
+        const productId = '550e8400-e29b-41d4-a716-446655440002';
+        const existingCart = createMockCart({
+          items: [
+            {
+              productId,
+              productName: 'テスト商品',
+              price: 1000,
+              quantity: 1,
+              addedAt: new Date(),
+            },
+          ],
+        });
+
+        vi.mocked(repository.findByUserId).mockResolvedValue(existingCart);
+        vi.mocked(productFetcher.findById).mockResolvedValue({
+          id: productId, name: 'テスト商品', price: 1000, stock: 5,
+        });
+
+        await expect(
+          updateCartItem(
+            { productId, quantity: 10 },
+            { session: createMockSession('buyer'), repository, productFetcher }
+          )
+        ).rejects.toThrow();
+      });
+    });
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────
-// カート削除
+// T008: removeFromCart ユースケース
 // ─────────────────────────────────────────────────────────────────
 
 describe('removeFromCart', () => {

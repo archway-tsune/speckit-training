@@ -131,5 +131,6 @@ export interface ProductFetcher {
     name: string;
     price: number;
     imageUrl?: string;
+    stock: number;
   } | null>;
 }
