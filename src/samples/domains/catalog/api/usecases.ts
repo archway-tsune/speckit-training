@@ -65,11 +65,12 @@ export async function getProducts(
   // buyerはpublished商品のみ取得可能
   const status = context.session.role === 'buyer' ? 'published' : (input.status || undefined);
 
+  const keyword = input.keyword || undefined;
   const offset = (page - 1) * limit;
 
   const [products, total] = await Promise.all([
-    context.repository.findAll({ status, offset, limit }),
-    context.repository.count(status),
+    context.repository.findAll({ status, offset, limit, keyword }),
+    context.repository.count(status, keyword),
   ]);
 
   return {
@@ -122,6 +123,7 @@ export async function createProduct(
   const product = await context.repository.create({
     name: input.name,
     price: input.price,
+    stock: input.stock,
     description: input.description,
     imageUrl: input.imageUrl,
     status: input.status || 'draft',
@@ -150,6 +152,7 @@ export async function updateProduct(
   const product = await context.repository.update(input.id, {
     name: input.name,
     price: input.price,
+    stock: input.stock,
     description: input.description,
     imageUrl: input.imageUrl,
     status: input.status,

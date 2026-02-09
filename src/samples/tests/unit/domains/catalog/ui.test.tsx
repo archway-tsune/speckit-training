@@ -19,6 +19,7 @@ function createMockProduct(overrides: Partial<Product> = {}): Product {
     id: '550e8400-e29b-41d4-a716-446655440000',
     name: 'テスト商品',
     price: 1000,
+    stock: 10,
     description: '商品の説明文です。',
     imageUrl: 'https://example.com/image.jpg',
     status: 'published',
